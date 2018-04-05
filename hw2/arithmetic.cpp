@@ -80,8 +80,8 @@ public:
 	}
 
 	void generate() {
-		bank["1+2"] = Calculate("1+2");
-		bank["3*4-8"] = Calculate("3*4-8");
+		bank["2/3"] = calc_frac("2/3");
+		bank["3*4-8"] = calc_frac("3*4-8");
 	}
 
 };

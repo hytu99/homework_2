@@ -1,118 +1,8 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<math.h>
-#include<stack>
-#include<string>
-#include<iostream>
-#include<map>
+#include <iostream> 
+#include <math.h>
+#include <string>
+#include "calc.h"
 using namespace std;
-
-int preop(char c1, char c2)
-{
-	map<char, int> ch = {{'+', 1}, {'-', 1}, {'*', 3}, {'/', 3}, {'^', 4}, {'(', 0}, {'#', -1}};
-	return ch[c1] >= ch[c2] ? 1 : 0;
-}
-
-int isoperator(char c)
-{
-	if (c == '(' || c == ')' || c == '+' || c == '-' || c == '*' || c == '/' || c == '#' || c == '^' )
-	{
-		return 1;
-	}
-	else
-		return 0;
-}
-
-double operate(double a, char c, double b)
-{
-	double e;
-	switch (c) {
-	case '+': e = a + b; break;
-	case '-': e = a - b; break;
-	case '*': e = a * b; break;
-	case '/': e = a / b; break;
-	case '^': e = pow(a, b); break;
-	}
-	return e;
-}
-
-string calc_double(string s)
-{
-	int i = 0, k = 0;
-	stack<char> Opr;
-	stack<double> Num;
-	char ch, c;
-	double a, b, temp;
-	char result[100];
-
-	Opr.push('#');
-	s += "#";
-
-	while (!Opr.empty()) {
-		ch = s[i++];
-		if (ch >= '0' && ch <= '9')
-		 {
-			temp = ch - '0';
-			while (((ch = s[i]) >= '0') && (ch <= '9'))
-			{
-				temp = temp * 10 + ch - '0';
-				i++;
-			}
-			k = 0;
-			if ((ch == '.'))
-			{
-				i++;
-				while (((ch = s[i]) >= '0') && (ch <= '9'))
-				{
-					temp = temp * 10 + ch - '0';
-					k++;
-					i++;
-				}
-			}
-			Num.push(temp / pow(10, k));
-			continue;
-		}
-		if (ch == ' ')
-		{
-			continue;
-		}
-		switch (ch)
-		{
-		case '(': Opr.push(ch); break;
-		case ')':
-			while ((c = Opr.top()) && (c != '(')) {
-				Opr.pop();
-				b = Num.top();
-				Num.pop();
-				a = Num.top();
-				Num.pop();
-				Num.push(operate(a, c, b));
-			}
-			if (c == '(')
-				Opr.pop();
-			break;
-		default:
-			while (!Opr.empty() && (c = Opr.top()) && preop(c, ch)) {
-				Opr.pop();
-				if (c == '#')
-					break;
-				b = Num.top();
-				Num.pop();
-				a = Num.top();
-				Num.pop();
-				Num.push(operate(a, c, b));
-			}
-			if (ch != '#') {
-				Opr.push(ch);
-			}
-		}
-	}
-	//printf("result: %.4lf\n", Num.top());
-	sprintf(result, "%.2lf", (Num.top()));
-	return result;
-}
-
-//*********************************************
 
 class Fraction
 {
@@ -132,13 +22,13 @@ public:
 		deno = de;
 	}
 
-	friend Fraction operator+(const Fraction &c1, const Fraction &c2);
-	friend Fraction operator-(const Fraction &c1, const Fraction &c2);
-	friend Fraction operator*(const Fraction &c1, const Fraction &c2);
-	friend Fraction operator/(const Fraction &c1, const Fraction &c2);
+	friend Fraction operator+(const Fraction &c1, const Fraction &c2);   
+	friend Fraction operator-(const Fraction &c1, const Fraction &c2); 
+	friend Fraction operator*(const Fraction &c1, const Fraction &c2);  
+	friend Fraction operator/(const Fraction &c1, const Fraction &c2);  
 
-	Fraction operator+();
-	Fraction operator-();
+	Fraction operator+();   
+	Fraction operator-();    
 
 	friend bool operator>(const Fraction &c1, const Fraction &c2);
 	friend bool operator<(const Fraction &c1, const Fraction &c2);
@@ -146,10 +36,10 @@ public:
 	friend bool operator!=(const Fraction &c1, const Fraction &c2);
 	friend bool operator>=(const Fraction &c1, const Fraction &c2);
 	friend bool operator<=(const Fraction &c1, const Fraction &c2);
-
+	
 	friend Fraction operate(const Fraction &c1, char c, const Fraction &c2);
 };
-
+ 
 void Fraction::simplify()
 {
 	int m, n, r, temp;
@@ -162,15 +52,15 @@ void Fraction::simplify()
 		m = n;
 		n = r;
 	}
-	deno /= n;
+	deno /= n;     
 	nume /= n;
-	if (deno<0)
+	if (deno<0) 
 	{
 		deno = -deno;
 		nume = -nume;
 	}
 }
-
+ 
 string Fraction::display()
 {
 	string s = "";
@@ -188,7 +78,7 @@ string Fraction::display()
 	}
 	return s;
 }
-
+  
 Fraction operator+(const Fraction &c1, const Fraction &c2)
 {
 	Fraction t;
@@ -206,7 +96,7 @@ Fraction operator-(const Fraction &c1, const Fraction &c2)
 	t.simplify();
 	return t;
 }
-
+ 
 Fraction operator*(const Fraction &c1, const Fraction &c2)
 {
 	Fraction t;
@@ -242,13 +132,13 @@ Fraction Fraction:: operator-()
 bool operator>(const Fraction &c1, const Fraction &c2)
 {
 	int c1_nume, c2_nume, common_deno;
-	c1_nume = c1.nume*c2.deno;
+	c1_nume = c1.nume*c2.deno;       
 	c2_nume = c2.nume*c1.deno;
 	common_deno = c1.deno*c2.deno;
-	if ((c1_nume - c2_nume)*common_deno>0) return true;
+	if ((c1_nume-c2_nume)*common_deno>0) return true;  
 	return false;
 }
-
+ 
 bool operator<(const Fraction &c1, const Fraction &c2)
 {
 	int c1_nume, c2_nume, common_deno;
@@ -270,7 +160,7 @@ bool operator!=(const Fraction &c1, const Fraction &c2)
 	if (c1>c2 || c1<c2) return true;
 	return false;
 }
-
+ 
 bool operator>=(const Fraction &c1, const Fraction &c2)
 {
 	if (c1<c2) return false;
@@ -283,7 +173,7 @@ bool operator<=(const Fraction &c1, const Fraction &c2)
 	return true;
 }
 
-Fraction operate(const Fraction &a, char c, const Fraction &b)
+Fraction operate(const Fraction &a, char c,const Fraction &b)
 {
 	Fraction e;
 	switch (c) {
@@ -303,7 +193,7 @@ string calc_frac(string s)
 	stack<Fraction> Num;
 	char ch, c;
 	Fraction a, b, temp;
-	int tempNume, tempDeno;
+	int tempNume,tempDeno;
 	string result;
 
 	Opr.push('#');
@@ -320,7 +210,7 @@ string calc_frac(string s)
 				i++;
 			}
 			temp.setNume(tempNume);
-			if ((ch == '/') && s[i + 1] >= '0' && s[i + 1] <= '9')
+			if ((ch == '/') && s[i+1] >= '0' && s[i+1] <= '9')
 			{
 				i++;
 				tempDeno = 0;
@@ -383,10 +273,8 @@ string calc_frac(string s)
 //	string exp;
 //	cout << "input:" << endl;
 //	getline(cin, exp);
-//	//cin >> exp;
-//	Calculate(exp);
-//	getchar();
+//	cin >> exp;
+//	cout << calc_frac(exp) << endl;
+//	system("pause");
 //	return 0;
 //}
-
-
