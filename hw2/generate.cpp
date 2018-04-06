@@ -8,9 +8,10 @@ using namespace std;
 
 int randomInt(int min, int max) {
 
-	default_random_engine e(time(NULL));
-	uniform_int_distribution<int> u(min, max);
-	return u(e);
+	//default_random_engine e(time(NULL));
+	//uniform_int_distribution<int> u(min, max);
+	//return u(e);
+	return rand() % (max - min + 1) + min;
 }
 
 string newExp(int oprNum, int oprType, int min, int max) {
@@ -54,10 +55,10 @@ string newExp(int oprNum, int oprType, int min, int max) {
 	return exp;
 }
 
-//int main() {
-//
-//	string test = newExp(1, 1, 20, 100);
-//	cout << test << endl;
-//	system("pasue");
-//
-//}
+int main() {
+	srand((unsigned)time(NULL));
+	string test = newExp(1, 1, 20, 100);
+	cout << test << endl;
+	system("pause");
+
+}

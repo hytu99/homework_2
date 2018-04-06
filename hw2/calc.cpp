@@ -131,11 +131,20 @@ public:
 	{
 		deno = de;
 	}
+	int getNume()
+	{
+		return nume;
+	}
+	int getDeno()
+	{
+		return deno;
+	}
 
 	friend Fraction operator+(const Fraction &c1, const Fraction &c2);
 	friend Fraction operator-(const Fraction &c1, const Fraction &c2);
 	friend Fraction operator*(const Fraction &c1, const Fraction &c2);
 	friend Fraction operator/(const Fraction &c1, const Fraction &c2);
+	friend Fraction operator^(const Fraction &c1, const int &c2);
 
 	Fraction operator+();
 	Fraction operator-();
@@ -222,6 +231,15 @@ Fraction operator/(const Fraction &c1, const Fraction &c2)
 	if (!c2.nume) return c1;
 	t.nume = c1.nume*c2.deno;
 	t.deno = c1.deno*c2.nume;
+	t.simplify();
+	return t;
+}
+
+Fraction operator^(const Fraction &c1, const int &c2)
+{
+	Fraction t;
+	t.nume = (int)pow(c1.nume, c2);
+	t.deno = (int)pow(c1.deno, c2);
 	t.simplify();
 	return t;
 }

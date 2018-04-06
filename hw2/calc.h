@@ -16,10 +16,35 @@ double operate(double a, char c, double b);
 string calc_double(string s);
 
 class Fraction {
+private:
+	int nume;  // numerator
+	int deno;  // denominator
+public:
+	Fraction(int nu = 0, int de = 1) :nume(nu), deno(de) {}
+	void simplify();
+	string display();
+	void setNume(int nu)
+	{
+		nume = nu;
+	}
+	void setDeno(int de)
+	{
+		deno = de;
+	}
+	int getNume()
+	{
+		return nume;
+	}
+	int getDeno()
+	{
+		return deno;
+	}
+
 	friend Fraction operator+(const Fraction &c1, const Fraction &c2);
 	friend Fraction operator-(const Fraction &c1, const Fraction &c2);
 	friend Fraction operator*(const Fraction &c1, const Fraction &c2);
 	friend Fraction operator/(const Fraction &c1, const Fraction &c2);
+	friend Fraction operator^(const Fraction &c1, const int &c2);
 
 	Fraction operator+();
 	Fraction operator-();
