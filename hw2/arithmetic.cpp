@@ -86,22 +86,22 @@ public:
 
 };
 
-int main() {
-
-	arithmetic test;
-	string* expSet;
-	string* ansSet;
-	test.setExpNum(2);
-	test.generate();
-	expSet = test.getExpSet();
-	ansSet = test.getAnsSet();
-	for (int i = 0; i < 2; i++) {
-		cout << expSet[i] << "=" << ansSet[i] << endl;
-	}
-	cout << " " << endl;
-	for (int i = 0; i < 2; i++) {
-		cout << expSet[i] << "=" << test.getAnswer(expSet[i]) << endl;
-	}
-	system("pause");
-
-}
+//int main() {
+//
+//	arithmetic test;
+//	string* expSet;
+//	string* ansSet;
+//	test.setExpNum(2);
+//	test.generate();
+//	expSet = test.getExpSet();
+//	ansSet = test.getAnsSet();
+//	for (int i = 0; i < 2; i++) {
+//		cout << expSet[i] << "=" << ansSet[i] << endl;
+//	}
+//	cout << " " << endl;
+//	for (int i = 0; i < 2; i++) {
+//		cout << expSet[i] << "=" << test.getAnswer(expSet[i]) << endl;
+//	}
+//	system("pause");
+//
+//}

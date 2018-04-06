@@ -121,11 +121,10 @@
   <ItemGroup>
     <ClCompile Include="arithmetic.cpp" />
     <ClCompile Include="calc.cpp" />
-    <ClCompile Include="fraction.cpp" />
+    <ClCompile Include="generate2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="calc.h" />
-    <ClInclude Include="fraction.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
