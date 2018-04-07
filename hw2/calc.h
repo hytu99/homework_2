@@ -44,7 +44,7 @@ public:
 	friend Fraction operator-(const Fraction &c1, const Fraction &c2);
 	friend Fraction operator*(const Fraction &c1, const Fraction &c2);
 	friend Fraction operator/(const Fraction &c1, const Fraction &c2);
-	friend Fraction operator^(const Fraction &c1, const int &c2);
+	friend Fraction operator^(const Fraction &c1, const Fraction &c2);
 
 	Fraction operator+();
 	Fraction operator-();
@@ -59,5 +59,7 @@ public:
 	friend Fraction operate(const Fraction &c1, char c, const Fraction &c2);
 };
 string calc_frac(string s);
+
+
 
 

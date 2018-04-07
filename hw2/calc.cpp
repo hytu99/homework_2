@@ -5,6 +5,7 @@
 #include<string>
 #include<iostream>
 #include<map>
+#include"calc.h"
 using namespace std;
 
 int preop(char c1, char c2)
@@ -114,54 +115,9 @@ string calc_double(string s)
 
 //*********************************************
 
-class Fraction
-{
-private:
-	int nume;  // numerator
-	int deno;  // denominator
-public:
-	Fraction(int nu = 0, int de = 1) :nume(nu), deno(de) {}
-	void simplify();
-	string display();
-	void setNume(int nu)
-	{
-		nume = nu;
-	}
-	void setDeno(int de)
-	{
-		deno = de;
-	}
-	int getNume()
-	{
-		return nume;
-	}
-	int getDeno()
-	{
-		return deno;
-	}
-
-	friend Fraction operator+(const Fraction &c1, const Fraction &c2);
-	friend Fraction operator-(const Fraction &c1, const Fraction &c2);
-	friend Fraction operator*(const Fraction &c1, const Fraction &c2);
-	friend Fraction operator/(const Fraction &c1, const Fraction &c2);
-	friend Fraction operator^(const Fraction &c1, const int &c2);
-
-	Fraction operator+();
-	Fraction operator-();
-
-	friend bool operator>(const Fraction &c1, const Fraction &c2);
-	friend bool operator<(const Fraction &c1, const Fraction &c2);
-	friend bool operator==(const Fraction &c1, const Fraction &c2);
-	friend bool operator!=(const Fraction &c1, const Fraction &c2);
-	friend bool operator>=(const Fraction &c1, const Fraction &c2);
-	friend bool operator<=(const Fraction &c1, const Fraction &c2);
-
-	friend Fraction operate(const Fraction &c1, char c, const Fraction &c2);
-};
-
 void Fraction::simplify()
 {
-	int m, n, r, temp;
+	int m, n, r;
 	m = abs(deno);
 	n = abs(nume);
 	if (n == 0)
@@ -235,13 +191,14 @@ Fraction operator/(const Fraction &c1, const Fraction &c2)
 	return t;
 }
 
-Fraction operator^(const Fraction &c1, const int &c2)
+Fraction operator^(const Fraction &c1, const Fraction &c2)
 {
 	Fraction t;
-	t.nume = (int)pow(c1.nume, c2);
-	t.deno = (int)pow(c1.deno, c2);
+	t.nume = (int)pow(c1.nume, c2.nume);
+	t.deno = (int)pow(c1.deno, c2.nume);
 	t.simplify();
 	return t;
+
 }
 
 Fraction Fraction:: operator+()
@@ -309,7 +266,7 @@ Fraction operate(const Fraction &a, char c, const Fraction &b)
 	case '-': e = a - b; break;
 	case '*': e = a * b; break;
 	case '/': e = a / b; break;
-	//case '^': e = pow(a, b); break;
+	case '^': e = a ^ b; break;
 	}
 	return e;
 }
