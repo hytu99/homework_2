@@ -76,7 +76,7 @@ public:
 
  Fraction randomFrac(Fraction min, Fraction max);
 
- string newFracExp(int oprNum, int oprType, Fraction &result);
+ string newFracExp(int oprNum, int oprType, int min, int max, Fraction &result);
 
 class  arithmetic {
 private:
@@ -102,7 +102,7 @@ public:
 		oprType = 0;
 		min = 0;
 		max = 10;
-		accuracy = 0;
+		accuracy = 2;
 
 	}
 

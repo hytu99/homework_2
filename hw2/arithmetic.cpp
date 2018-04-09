@@ -242,7 +242,7 @@ bool operator>(const Fraction &c1, const Fraction &c2)
 	c1_nume = c1.nume*c2.deno;
 	c2_nume = c2.nume*c1.deno;
 	common_deno = c1.deno*c2.deno;
-	if ((c1_nume - c2_nume)*common_deno>0) return true;
+	if (c1_nume - c2_nume>0) return true;
 	return false;
 }
 
@@ -252,7 +252,7 @@ bool operator<(const Fraction &c1, const Fraction &c2)
 	c1_nume = c1.nume*c2.deno;
 	c2_nume = c2.nume*c1.deno;
 	common_deno = c1.deno*c2.deno;
-	if ((c1_nume - c2_nume)*common_deno<0) return true;
+	if (c1_nume - c2_nume<0) return true;
 	return false;
 }
 
@@ -400,7 +400,7 @@ string newExp(int oprNum, int oprType, int min, int max, double &result) {
 	}
 
 	leftVal = randomInt(min, max);
-	if (leftVal > 10 && oprMax == 4)
+	if (leftVal > 20 && oprMax == 4)
 		oprMax = 3;
 	curOpr = (int)randomInt(0, oprMax);
 	oprNum--;
@@ -431,7 +431,7 @@ string newExp(int oprNum, int oprType, int min, int max, double &result) {
 
 	while (oprNum) {
 		lastOpr = curOpr;
-		if ((!powerNum || tempVal > 10) && oprMax == 4)
+		if ((!powerNum || tempVal > 20) && oprMax == 4)
 			oprMax = 3;
 		curOpr = (int)randomInt(0, oprMax);
 		oprNum--;
@@ -540,7 +540,7 @@ string newExactDivExp(int oprNum, int oprType, int min, int max, int &result) {
 	}
 
 	leftVal = (int)randomInt(min, max);
-	if (leftVal > 10 && oprMax == 4)
+	if (leftVal > 20 && oprMax == 4)
 		oprMax = 3;
 	curOpr = (int)randomInt(0, oprMax);
 	oprNum--;
@@ -570,7 +570,7 @@ string newExactDivExp(int oprNum, int oprType, int min, int max, int &result) {
 	tempVal = (int)operate(leftVal, opr[curOpr], rightVal);
 	while (oprNum) {
 		lastOpr = curOpr;
-		if ((!powerNum || tempVal > 10) && oprMax == 4)
+		if ((!powerNum || tempVal > 20) && oprMax == 4)
 			oprMax = 3;
 		curOpr = (int)randomInt(0, oprMax);
 		oprNum--;
@@ -630,23 +630,50 @@ string newExactDivExp(int oprNum, int oprType, int min, int max, int &result) {
 
 }
 
+Fraction randomFrac(Fraction min, Fraction max, int denoMin, int denoMax) {
 
-Fraction randomFrac(Fraction min, Fraction max) {
-
-	int deno = min.getDeno()*max.getDeno();
-	int numeMin = min.getNume()*max.getDeno();
-	int numeMax = min.getDeno()*max.getNume();
-	int nume = (int)randomInt(numeMin, numeMax);
-	Fraction frac(nume, deno);
-	return frac;
+	int newDenoMin, newDenoMax;
+	int nume, deno;
+	if (min.getDeno() < max.getDeno())
+	{
+		newDenoMin = min.getDeno();
+		newDenoMax = max.getDeno();
+	}
+	else
+	{
+		newDenoMin = max.getDeno();
+		newDenoMax = min.getDeno();
+	}
+	if (newDenoMin < denoMin)
+		newDenoMin = denoMin;
+	if (newDenoMax > denoMax)
+		newDenoMax = denoMax;
+	deno = (int)randomInt(newDenoMin, newDenoMax);
+	nume = (int)randomInt(1, deno);
+	while (Fraction(nume, deno) > max || Fraction(nume, deno) < min)
+	{
+		nume = (int)randomInt(1, deno);
+	}
+	return Fraction(nume, deno);
 }
 
-string newFracExp(int oprNum, int oprType, Fraction &result) {
+//Fraction randomFrac(Fraction min, Fraction max, int a, int b) {
+//
+//	int deno = min.getDeno()*max.getDeno();
+//	int numeMin = min.getNume()*max.getDeno();
+//	int numeMax = min.getDeno()*max.getNume();
+//	int nume = (int)randomInt(numeMin, numeMax);
+//	Fraction frac(nume, deno);
+//	return frac;
+//}
 
+string newFracExp(int oprNum, int oprType, int min, int max, Fraction &result) {
+
+	if (!min) {
+		min++;
+	}
 	string exp;
-	int denoType;
-	denoType = (int)randomInt(6, 16);
-	Fraction minFrac(1, denoType), maxFrac(1, 1);
+	Fraction minFrac(1, max), maxFrac(1, 1);
 	const char opr[5] = { '+','-','*','/','^' };
 	int oprMax;
 	switch (oprType) {
@@ -659,24 +686,24 @@ string newFracExp(int oprNum, int oprType, Fraction &result) {
 	int powerNum = 2;
 	int tempIndex = 2;
 
-	leftVal = randomFrac(minFrac, maxFrac);
-	if ((leftVal.getDeno() > 10 || leftVal.getNume()>10) && oprMax == 4)
+	leftVal = randomFrac(minFrac, maxFrac, min, max);
+	if ((leftVal.getDeno() > 20 || leftVal.getNume()> 20) && oprMax == 4)
 		oprMax = 3;
 	curOpr = (int)randomInt(0, oprMax);
 	oprNum--;
 
 	switch (curOpr) {
 	case 0:
-		rightVal = randomFrac(minFrac, maxFrac);
+		rightVal = randomFrac(minFrac, maxFrac, min, max);
 		break;
 	case 1: //leftVal = randomInt(min, max);
-		rightVal = randomFrac(minFrac, leftVal);
+		rightVal = randomFrac(minFrac, leftVal, min, max);
 		break;
 	case 2: //leftVal = randomInt(min, max);
-		rightVal = randomFrac(minFrac, maxFrac);
+		rightVal = randomFrac(minFrac, maxFrac, min, max);
 		break;
 	case 3: //leftVal = randomInt(min, max);
-		rightVal = randomFrac(minFrac, maxFrac);
+		rightVal = randomFrac(minFrac, maxFrac, min, max);
 		break;
 	case 4:
 		tempIndex = (int)randomInt(2, 3);
@@ -697,7 +724,7 @@ string newFracExp(int oprNum, int oprType, Fraction &result) {
 
 	while (oprNum) {
 		lastOpr = curOpr;
-		if ((!powerNum || tempVal.getDeno() > 10 || tempVal.getNume()>10) && oprMax == 4)
+		if ((!powerNum || tempVal.getDeno() > 20 || tempVal.getNume()>20) && oprMax == 4)
 			oprMax = 3;
 		curOpr = (int)randomInt(0, oprMax);
 		oprNum--;
@@ -712,7 +739,7 @@ string newFracExp(int oprNum, int oprType, Fraction &result) {
 		else {
 			if (curOpr == 3 && tempVal == Fraction(0, 1) || curOpr == 1 && tempVal >= maxFrac || randomInt(0, 1) && (!(curOpr == 1 && tempVal < minFrac))) {
 				leftVal = tempVal;
-				curOpr == 1 ? rightVal = randomFrac(minFrac, leftVal < maxFrac ? leftVal : maxFrac) : rightVal = randomFrac(minFrac, maxFrac);
+				curOpr == 1 ? rightVal = randomFrac(minFrac, leftVal < maxFrac ? leftVal : maxFrac, min, max) : rightVal = randomFrac(minFrac, maxFrac, min, max);
 
 				leftVal.simplify();
 				rightVal.simplify();
@@ -727,7 +754,7 @@ string newFracExp(int oprNum, int oprType, Fraction &result) {
 			}
 			else {
 				rightVal = tempVal;
-				curOpr == 1 ? leftVal = randomFrac(rightVal > minFrac ? rightVal : minFrac, maxFrac) : leftVal = randomFrac(minFrac, maxFrac);
+				curOpr == 1 ? leftVal = randomFrac(rightVal > minFrac ? rightVal : minFrac, maxFrac, min, max) : leftVal = randomFrac(minFrac, maxFrac, min, max);
 
 				leftVal.simplify();
 				rightVal.simplify();
@@ -821,7 +848,7 @@ void arithmetic::generate()
 			}
 			p[i].ans = result;
 			break;
-		case 2:p[i].exp = newFracExp(oprNum, oprType, resultF);
+		case 2:p[i].exp = newFracExp(oprNum, oprType, min, max, resultF);
 			p[i].ans = resultF.display();
 			break;
 		default :

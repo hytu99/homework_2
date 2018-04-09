@@ -4,10 +4,10 @@ int main() {
 
 	arithmetic test;
 	test.setExpNum(20);
-	test.setExpType(2);
-	test.setBounds(5, 10);
-	test.setOprNum(4);
-	test.setOprType(2);
+	test.setExpType(0);
+	test.setBounds(1, 15);
+	test.setOprNum(2);
+	test.setOprType(1);
 	test.setAccuracy(4);
 
 	test.generate();
@@ -20,5 +20,5 @@ int main() {
 		cout << i << " "<< expSet[i] << " = " << ansSet[i] << endl;
 	}
 
-	system("pause");
+ 	system("pause");
 }
