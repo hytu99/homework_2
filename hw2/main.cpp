@@ -4,10 +4,10 @@ int main() {
 
 	arithmetic test;
 	test.setExpNum(20);
-	test.setExpType(0);
+	test.setExpType(2);
 	test.setBounds(1, 15);
 	test.setOprNum(2);
-	test.setOprType(1);
+	test.setOprType(2);
 	test.setAccuracy(4);
 
 	test.generate();

@@ -80,9 +80,9 @@ ArithmeticAPI int randomDividend(int divisor, int min, int max);
 
 ArithmeticAPI string newExactDivExp(int oprNum, int oprType, int min, int max, int &result);
 
-ArithmeticAPI Fraction randomFrac(Fraction min, Fraction max);
+ArithmeticAPI Fraction randomFrac(Fraction min, Fraction max, int denoMin, int denoMax);
 
-ArithmeticAPI string newFracExp(int oprNum, int oprType, Fraction &result);
+ArithmeticAPI string newFracExp(int oprNum, int oprType, int min, int max, Fraction &result);
 
 class ArithmeticAPI arithmetic {
 private:
