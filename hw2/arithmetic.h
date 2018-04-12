@@ -87,7 +87,7 @@ private:
 	}expNode;
 	expNode *p;
 	int expNum;
-	int expType;    //0 for decimals, 1 for fractions
+	int expType;    //0 for integers, 1 for decimals, 2 for fractions
 	int oprNum;
 	int oprType;    //0 for +-, 1 for +-x/, 2 for +-x/^
 	int min, max;
@@ -100,7 +100,7 @@ public:
 		expType = 0;
 		oprNum = 1;
 		oprType = 0;
-		min = 0;
+		min = 1;
 		max = 10;
 		accuracy = 2;
 
@@ -112,6 +112,8 @@ public:
 	void setOprType(int n);
 	void setBounds(int min, int max);
 	void setAccuracy(int n);
+
+	int getExpNum();
 
 	string* getExpSet();
 

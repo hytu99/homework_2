@@ -504,10 +504,13 @@ int randomDividend(int divisor, int min, int max) {
 	dividend = new int[DIVISIONSIZE];
 	dividend[0] = divisor;
 	int count = 0;
-	int i = min;
-	while (i > divisor&&i < max) {
-		count++;
-		dividend[count] = i * divisor;
+	int i = divisor + 1;
+	while (i < max) {
+		if (i%divisor == 0)
+		{
+			count++;
+			dividend[count] = i;
+		}
 		i++;
 	}
 	int randDiv = 0;
@@ -775,28 +778,96 @@ string newFracExp(int oprNum, int oprType, int min, int max, Fraction &result) {
 }
 
 void arithmetic::setExpNum(int n) {
-	expNum = n;
+
+	try {
+		expNum = n;
+		if (expNum < 0) {
+			throw "The number of expressions must be an integer and at least one.";
+		}
+	}
+	catch (const char* msg) {
+		cout << msg << endl;
+		setExpNum(0);
+	}
 }
 
-void arithmetic::arithmetic::setExpType(int n) {
-	expType = n;
+void arithmetic::setExpType(int n) {
+	try {
+		expType = n;
+		if (expType > 2 || expType < 0) {
+			throw "Type of expressions must be an integer among 0, 1 and 2.";
+		}
+	}
+	catch (const char* msg) {
+		cout << msg << endl;
+		expType = 0;
+		setExpNum(0);
+	}
+
 }
 
-void arithmetic::arithmetic::setOprNum(int n) {
-	oprNum = n;
+void arithmetic::setOprNum(int n) {
+	try {
+		oprNum = n;
+		if (oprNum <= 0) {
+			throw "The number of operators must be an integer larger than zero.";
+		}
+	}
+	catch (const char* msg) {
+		cout << msg << endl;
+		oprNum = 1;
+		setExpNum(0);
+	}
+
 }
 
-void arithmetic::arithmetic::setOprType(int n) {
-	oprType = n;
+void arithmetic::setOprType(int n) {
+	try {
+		oprType = n;
+		if (oprType < 0 || oprType>2) {
+			throw "Type of operators must be an integer among 0,1 and 2.";
+		}
+	}
+	catch (const char* msg) {
+		cout << msg << endl;
+		oprType = 0;
+		setExpNum(0);
+	}
 }
 
 void arithmetic::setBounds(int min, int max) {
-	this->min = min;
-	this->max = max;
+	try {
+		this->min = min;
+		this->max = max;
+		if (min < 0 || max < min || min == 0 && max == 0) {
+			throw "The ceiling bound must be larger than floor bound and both are positive.";
+		}
+	}
+	catch (const char* msg) {
+		cout << msg << endl;
+		this->min = 0;
+		this->max = 10;
+		setExpNum(0);
+	}
+
 }
 
 void arithmetic::setAccuracy(int n) {
-	accuracy = n;
+
+	try {
+		accuracy = n;
+		if (n < 0)throw"Acurracy index must be a non-negative integer.";
+	}
+	catch (const char* msg) {
+		cout << msg << endl;
+		n = 2;
+		setExpNum(0);
+	}
+
+}
+
+int arithmetic::getExpNum() {
+	return expNum;
 }
 
 string* arithmetic::getExpSet() {
@@ -822,6 +893,9 @@ string* arithmetic::getAnsSet() {
 void arithmetic::generate()
 {
 	srand((unsigned)(time(NULL)));
+
+	if (expNum < 1 || expType < 0 || expType > 2 || oprNum < 1 || oprType < 0 || oprType > 2 || min < 0 || min > max || accuracy < 0)
+		exit(0);
 
 	int i;
 	int resultI;

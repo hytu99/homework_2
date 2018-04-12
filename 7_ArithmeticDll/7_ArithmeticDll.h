@@ -26,15 +26,19 @@
 #define DIVISIONSIZE 500
 using namespace std;
 
+//Compare the precedence of two opetator
 ArithmeticAPI int preop(char c1, char c2);
+
+//Judge if it's an operator
 ArithmeticAPI int isoperator(char c);
 
+//Compute the operation result of two numbers
 ArithmeticAPI double operate(double a, char c, double b);
 
+//Compute the value of the expression composed of integers and decimals
 ArithmeticAPI string calc_double(string s);
 
-//*********************************************
-
+//Fraction
 class ArithmeticAPI Fraction
 {
 private:
@@ -42,6 +46,7 @@ private:
 	int deno;  // denominator
 public:
 	Fraction(int nu = 0, int de = 1) :nume(nu), deno(de) {}
+
 	void simplify();
 	string display();
 	void setNume(int nu);
@@ -68,20 +73,28 @@ public:
 	ArithmeticAPI friend Fraction operate(const Fraction &c1, char c, const Fraction &c2);
 };
 
+//Compute the value of the expression composed of integers and fractions
 ArithmeticAPI string calc_frac(string s);
 
+//return a random number between min and max
 ArithmeticAPI double randomInt(int min, int max);
 
+//return an expression composed of integers meeting the requirements
 ArithmeticAPI string newExp(int oprNum, int oprType, int min, int max, double &result);
 
+//return a random divisor between min and max for the dividend
 ArithmeticAPI int randomDivisor(int dividend, int min, int max);
 
+//return a random multiple of the dividend between min and max 
 ArithmeticAPI int randomDividend(int divisor, int min, int max);
 
+//return an expression composed of integers meeting the requirements
 ArithmeticAPI string newExactDivExp(int oprNum, int oprType, int min, int max, int &result);
 
+//return a random fraction between min and max
 ArithmeticAPI Fraction randomFrac(Fraction min, Fraction max, int denoMin, int denoMax);
 
+//return an expression composed of fractions meeting the requirements
 ArithmeticAPI string newFracExp(int oprNum, int oprType, int min, int max, Fraction &result);
 
 class ArithmeticAPI arithmetic {
@@ -92,7 +105,7 @@ private:
 	}expNode;
 	expNode *p;
 	int expNum;
-	int expType;    //0 for decimals, 1 for fractions
+	int expType;    //0 for integers, 1 for decimals, 2 for fractions
 	int oprNum;
 	int oprType;    //0 for +-, 1 for +-x/, 2 for +-x/^
 	int min, max;
@@ -105,9 +118,9 @@ public:
 		expType = 0;
 		oprNum = 1;
 		oprType = 0;
-		min = 0;
+		min = 1;
 		max = 10;
-		accuracy = 0;
+		accuracy = 2;
 
 	}
 
@@ -117,6 +130,8 @@ public:
 	void setOprType(int n);
 	void setBounds(int min, int max);
 	void setAccuracy(int n);
+
+	int getExpNum();
 
 	string* getExpSet();
 
