@@ -5,7 +5,7 @@ int main() {
 	arithmetic test;
 	test.setExpNum(20);
 	test.setExpType(1);
-	test.setBounds(0, 1);
+	test.setBounds(1, 20);
 	test.setOprNum(4);
 	//test.setOprType(2);
 	//test.setOprAdd(0);
@@ -13,9 +13,9 @@ int main() {
 	//test.setOprMul(0);
 	//test.setOprDiv(0);
 	//test.setOprPow(1);
-	test.setOprAll(1, 1, 1, 1, 1);
-	//test.setOprByStr("-*");
-	test.setAccuracy(5);
+	//test.setOprAll(1, 1, 1, 1, 1);
+	test.setOprByStr("/");
+	test.setAccuracy(2);
 
 	test.generate();
 

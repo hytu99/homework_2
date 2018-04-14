@@ -991,6 +991,7 @@ void arithmetic::setOprAll(int a, int s, int m, int d, int p) {
 void arithmetic::setOprByStr(string s) {
 	int i, flag = 0;
 	int len = (int)s.length();
+	oprType[1] = oprType[0] = 0;
 	for (i = 0; i < len; i++) {
 		try {
 			switch (s[i]) {
