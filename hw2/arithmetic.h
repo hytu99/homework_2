@@ -10,13 +10,9 @@
 #include<ctime>
 
 #define epsilon 1e-8
-#define eleMax 9;
 #define INTEGER 0
 #define DECIMAL 1
 #define FRACTION 2
-#define ADDSUB 0
-#define MULDIV 1
-#define POW 2
 #define DIVISIONSIZE 500
 using namespace std;
 
@@ -66,21 +62,22 @@ public:
 
  double randomInt(int min, int max);
 
- string newExp(int oprNum, int oprType, int min, int max, double &result);
+ string newExp(int oprNum, int oprType[], int min, int max, double &result);
 
  int randomDivisor(int dividend, int min, int max);
 
  int randomDividend(int divisor, int min, int max);
 
- string newExactDivExp(int oprNum, int oprType, int min, int max, int &result);
+ double randomDec(double min, double max, int k);
+
+ string newExactDivExp(int oprNum, int oprType[], int min, int max, int &result);
 
  Fraction randomFrac(Fraction min, Fraction max);
 
- string newFracExp(int oprNum, int oprType, int min, int max, Fraction &result);
+ string newFracExp(int oprNum, int oprType[], int min, int max, Fraction &result);
 
 class  arithmetic {
 private:
-	//map<string, string> bank;
 	typedef struct expNode {
 		string exp;
 		string ans;
@@ -89,7 +86,8 @@ private:
 	int expNum;
 	int expType;    //0 for integers, 1 for decimals, 2 for fractions
 	int oprNum;
-	int oprType;    //0 for +-, 1 for +-x/, 2 for +-x/^
+	//int oprTypeOption;    //0 for +-, 1 for +-x/, 2 for +-x/^
+	int oprType[5]; //******
 	int min, max;
 	int accuracy;   //the accuracy of decimals
 
@@ -99,7 +97,13 @@ public:
 		expNum = 1;
 		expType = 0;
 		oprNum = 1;
-		oprType = 0;
+		//oprType = 0;
+		oprType[0] = 1; //***
+		oprType[1] = 1;
+		oprType[2] = 0;
+		oprType[3] = 0;
+		oprType[4] = 0; //***
+
 		min = 1;
 		max = 10;
 		accuracy = 2;
@@ -109,7 +113,15 @@ public:
 	void setExpNum(int n);
 	void setExpType(int n);
 	void setOprNum(int n);
-	void setOprType(int n);
+	//void setOprType(int n);
+	void setOprAdd(int n);
+	void setOprSub(int n);
+	void setOprMul(int n);
+	void setOprDiv(int n);
+	void setOprPow(int n);
+	void setOprAll(int a, int s, int m, int d, int p);
+	void setOprByStr(string s);
+
 	void setBounds(int min, int max);
 	void setAccuracy(int n);
 
@@ -118,8 +130,6 @@ public:
 	string* getExpSet();
 
 	string* getAnsSet();
-
-	//string getAnswer(string exp);
 
 	void generate();
 

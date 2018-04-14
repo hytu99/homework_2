@@ -42,8 +42,6 @@ double operate(double a, char c, double b)
 	return e;
 }
 
-
-
 string calc_double(string s)
 {
 	int i = 0, k = 0;
@@ -380,50 +378,74 @@ double randomInt(int min, int max) {
 	return rand() % (max - min + 1) + min;
 }
 
-string newExp(int oprNum, int oprType, int min, int max, double &result) {
+double randomDec(double min, double max, int k) {
+	int minInt = (int)ceil(min*pow(10,k));
+	int maxInt = (int)floor(max*pow(10, k));
+	double randDec;
+	int randInt;
+	if (minInt <= maxInt) {
+		randInt = rand() % (maxInt - minInt + 1) + minInt;
+		randDec = (double)randInt / pow(10, k);
+	}
+	else {
+		randDec = min;
+	}
+	return randDec;
+}
+
+
+string newExp(int oprNum, int oprType[], int min, int max, double &result) {
 
 	if (!min) {
 		min++;
 	}
-
 	string exp;
-	const char opr[5] = { '+','-','*','/','^' };
-	int oprMax;
+	int i, j = 0, oprMax = 0;
+	char opr[5];
 	int curOpr, lastOpr;
 	double leftVal, rightVal, tempVal;
 	int powerNum = 2;
 
-	switch (oprType) {
-	case 0:oprMax = 1; break;
-	case 1:oprMax = 3; break;
-	case 2:oprMax = 4; break;
+	for (i = 0; i < 5; i++) {
+		if (oprType[i]) {
+			switch (i)
+			{
+			case 0: opr[j++] = '+'; break;
+			case 1: opr[j++] = '-'; break;
+			case 2: opr[j++] = '*'; break;
+			case 3: opr[j++] = '/'; break;
+			case 4: opr[j++] = '^'; break;
+			default:
+				break;
+			}
+		}
 	}
+	oprMax = j - 1;
 
 	leftVal = randomInt(min, max);
-	if (leftVal > 20 && oprMax == 4)
-		oprMax = 3;
+	if (leftVal > 20 && opr[oprMax] == '^' && oprMax > 0)
+		oprMax--;
 	curOpr = (int)randomInt(0, oprMax);
 	oprNum--;
 
-	switch (curOpr) {
-	case 0: //leftVal = randomInt(min, max);
+	switch (opr[curOpr]) {
+	case '+':
 		rightVal = randomInt(min, max);
 		break;
-	case 1: //leftVal = randomInt(min, max);
+	case '-':
 		rightVal = randomInt(min, (int)leftVal);
 		break;
-	case 2: //leftVal = randomInt(min, max);
+	case '*':
 		rightVal = randomInt(min, max);
 		break;
-	case 3: //leftVal = randomInt(min, max);
+	case '/': 
 		rightVal = randomInt(min, max);
 		break;
-	case 4:rightVal = randomInt(2, 3);
-		//leftVal = randomInt(min, max);
+	case '^':rightVal = randomInt(2, 3);
 		powerNum--;
 		break;
 	}
-	if (curOpr == 4)
+	if (opr[curOpr] == '^')
 		exp = to_string((int)leftVal) + opr[curOpr] + to_string((int)rightVal);
 	else
 		exp = to_string((int)leftVal) + " " + opr[curOpr] + " " + to_string((int)rightVal);
@@ -431,11 +453,11 @@ string newExp(int oprNum, int oprType, int min, int max, double &result) {
 
 	while (oprNum) {
 		lastOpr = curOpr;
-		if ((!powerNum || tempVal > 20) && oprMax == 4)
-			oprMax = 3;
+		if ((powerNum == 0 || tempVal > 20) && opr[oprMax] == '^' && oprMax > 0)
+			oprMax--;
 		curOpr = (int)randomInt(0, oprMax);
 		oprNum--;
-		if (curOpr == 4) {
+		if (opr[curOpr] == '^') {
 			powerNum--;
 			leftVal = tempVal;
 			rightVal = randomInt(2, 3);
@@ -443,10 +465,10 @@ string newExp(int oprNum, int oprType, int min, int max, double &result) {
 			tempVal = operate(leftVal, opr[curOpr], rightVal);
 		}
 		else {
-			if (curOpr == 3 && tempVal == 0 || curOpr == 1 && tempVal >= max || (int)randomInt(0, 1) && (!(curOpr == 1 && tempVal < min))) {
+			if (opr[curOpr] == '/' && tempVal == 0 || opr[curOpr] == '-' && tempVal >= max || (int)randomInt(0, 1) && (!(opr[curOpr] == '-' && tempVal < min))) {
 				leftVal = tempVal;
-				curOpr == 1 ? rightVal = randomInt(min, leftVal < max ? (int)leftVal : max) : rightVal = randomInt(min, max);
-				if (curOpr >= 2 && lastOpr <= 1) {
+				opr[curOpr] == '-' ? rightVal = randomInt(min, leftVal < max ? (int)leftVal : max) : rightVal = randomInt(min, max);
+				if ((opr[curOpr] == '*' || opr[curOpr] == '/') && (opr[lastOpr] == '+' || opr[lastOpr] == '-')) {
 					exp = "( " + exp + " ) " + opr[curOpr] + " " + to_string((int)rightVal);
 					tempVal = operate(leftVal, opr[curOpr], rightVal);
 				}
@@ -457,8 +479,8 @@ string newExp(int oprNum, int oprType, int min, int max, double &result) {
 			}
 			else {
 				rightVal = tempVal;
-				curOpr == 1 ? leftVal = randomInt(rightVal > min ? (int)rightVal : min, max) : leftVal = randomInt(min, max);
-				if (curOpr >= 2 && lastOpr <= 1 || curOpr == 1 && lastOpr <= 1 || curOpr == 3 && (lastOpr == 3 || lastOpr == 2)) {
+				opr[curOpr] == '-' ? leftVal = randomInt(rightVal > min ? (int)rightVal : min, max) : leftVal = randomInt(min, max);
+				if ((opr[curOpr] == '*' || opr[curOpr] == '/') && (opr[lastOpr] == '+' || opr[lastOpr] == '-') || opr[curOpr] == '-' && (opr[lastOpr] == '+' || opr[lastOpr] == '-') || opr[curOpr] == '/' && (opr[lastOpr] == '*' || opr[lastOpr] == '/')) {
 					exp = to_string((int)leftVal) + " " + opr[curOpr] + " ( " + exp + " )";
 					tempVal = operate(leftVal, opr[curOpr], rightVal);
 				}
@@ -523,61 +545,76 @@ int randomDividend(int divisor, int min, int max) {
 	}
 }
 
-string newExactDivExp(int oprNum, int oprType, int min, int max, int &result) {
+string newExactDivExp(int oprNum, int oprType[], int min, int max, int &result) {
 
 	if (!min) {
 		min++;
 	}
 
 	string exp;
-	const char opr[5] = { '+','-','*','/','^' };
-	int oprMax;
+	//const char opr[5] = { '+','-','*','/','^' };
+	int oprMax = 0, i, j = 0;
+	char opr[5];
 	int curOpr, lastOpr;
 	int leftVal, rightVal, tempVal;
 	int powerNum = 2;
 
-	switch (oprType) {
+	for (i = 0; i < 5; i++) {
+		if (oprType[i]) {
+			switch (i)
+			{
+			case 0: opr[j++] = '+'; break;
+			case 1: opr[j++] = '-'; break;
+			case 2: opr[j++] = '*'; break;
+			case 3: opr[j++] = '/'; break;
+			case 4: opr[j++] = '^'; break;
+			default:
+				break;
+			}
+		}
+	}
+	oprMax = j - 1;
+	/*switch (oprType) {
 	case 0:oprMax = 1; break;
 	case 1:oprMax = 3; break;
 	case 2:oprMax = 4; break;
-	}
+	}*/
 
 	leftVal = (int)randomInt(min, max);
-	if (leftVal > 20 && oprMax == 4)
-		oprMax = 3;
+	if (leftVal > 20 && opr[oprMax] == '^' && oprMax > 0)
+		oprMax--;
 	curOpr = (int)randomInt(0, oprMax);
 	oprNum--;
 
-	switch (curOpr) {
-	case 0: //leftVal = randomInt(min, max);
+	switch (opr[curOpr]) {
+	case '+': 
 		rightVal = (int)randomInt(min, max);
 		break;
-	case 1: //leftVal = randomInt(min, max);
+	case '-': 
 		rightVal = (int)randomInt(min, leftVal);
 		break;
-	case 2: //leftVal = randomInt(min, max);
+	case '*': 
 		rightVal = (int)randomInt(min, max);
 		break;
-	case 3: if (min == 0)min++;
+	case '/': if (min == 0)min++;
 		rightVal = randomDivisor(leftVal, min, leftVal);
 		break;
-	case 4:rightVal = (int)randomInt(2, 3);
-		//leftVal = randomInt(min, max);
+	case '^':rightVal = (int)randomInt(2, 3);
 		powerNum--;
 		break;
 	}
-	if (curOpr == 4)
+	if (opr[curOpr] == '^')
 		exp = to_string(leftVal) + opr[curOpr] + to_string(rightVal);
 	else
 		exp = to_string(leftVal) + " " + opr[curOpr] + " " + to_string(rightVal);
 	tempVal = (int)operate(leftVal, opr[curOpr], rightVal);
 	while (oprNum) {
 		lastOpr = curOpr;
-		if ((!powerNum || tempVal > 20) && oprMax == 4)
-			oprMax = 3;
+		if ((powerNum == 0 || tempVal > 20) && opr[oprMax] == '^' && oprMax > 0)
+			oprMax--;
 		curOpr = (int)randomInt(0, oprMax);
 		oprNum--;
-		if (curOpr == 4) {
+		if (opr[curOpr] == '^') {
 			powerNum--;
 			leftVal = tempVal;
 			rightVal = (int)randomInt(2, 3);
@@ -585,10 +622,10 @@ string newExactDivExp(int oprNum, int oprType, int min, int max, int &result) {
 			tempVal = (int)operate(leftVal, opr[curOpr], rightVal);
 		}
 		else {
-			if (curOpr == 3 && tempVal == 0 || curOpr == 1 && tempVal >= max || randomInt(0, 1) && (!(curOpr == 1 && tempVal < min))) {
+			if (opr[curOpr] == '/' && tempVal == 0 || opr[curOpr] == '-' && tempVal >= max || (int)randomInt(0, 1) && (!(opr[curOpr] == '-' && tempVal < min))) {
 				leftVal = tempVal;
-				curOpr == 1 ? rightVal = (int)randomInt(min, leftVal < max ? leftVal : max) : rightVal = (int)randomInt(min, max);
-				if (curOpr == 3) {
+				opr[curOpr] == '-' ? rightVal = (int)randomInt(min, leftVal < max ? leftVal : max) : rightVal = (int)randomInt(min, max);
+				if (opr[curOpr] == '/') {
 					if (!min)min++;
 					rightVal = randomDivisor(leftVal, min, leftVal < max ? leftVal : max);
 					if (rightVal == leftVal && (rightVal<min || rightVal>max)) {
@@ -597,7 +634,7 @@ string newExactDivExp(int oprNum, int oprType, int min, int max, int &result) {
 						continue;
 					}
 				}
-				if (curOpr >= 2 && lastOpr <= 1) {
+				if ((opr[curOpr] == '*' || opr[curOpr] == '/') && (opr[lastOpr] == '+' || opr[lastOpr] == '-')) {
 					exp = "( " + exp + " ) " + opr[curOpr] + " " + to_string(rightVal);
 					tempVal = (int)operate(leftVal, opr[curOpr], rightVal);
 				}
@@ -608,8 +645,8 @@ string newExactDivExp(int oprNum, int oprType, int min, int max, int &result) {
 			}
 			else {
 				rightVal = tempVal;
-				curOpr == 1 ? leftVal = (int)randomInt(rightVal > min ? rightVal : min, max) : leftVal = (int)randomInt(min, max);
-				if (curOpr == 3) {
+				opr[curOpr] == '-' ? leftVal = (int)randomInt(rightVal > min ? rightVal : min, max) : leftVal = (int)randomInt(min, max);
+				if (opr[curOpr] == '/') {
 					leftVal = randomDividend(rightVal, rightVal > min ? rightVal : min, max);
 					if (leftVal == rightVal && (leftVal<min || leftVal>max)) {
 						oprNum++;
@@ -617,7 +654,7 @@ string newExactDivExp(int oprNum, int oprType, int min, int max, int &result) {
 						continue;
 					}
 				}
-				if (curOpr >= 2 && lastOpr <= 1 || curOpr == 1 && lastOpr <= 1 || curOpr == 3 && (lastOpr == 3 || lastOpr == 2)) {
+				if ((opr[curOpr] == '*' || opr[curOpr] == '/') && (opr[lastOpr] == '+' || opr[lastOpr] == '-') || opr[curOpr] == '-' && (opr[lastOpr] == '+' || opr[lastOpr] == '-') || opr[curOpr] == '/' && (opr[lastOpr] == '*' || opr[lastOpr] == '/')) {
 					exp = to_string(leftVal) + " " + opr[curOpr] + " ( " + exp + " )";
 					tempVal = (int)operate(leftVal, opr[curOpr], rightVal);
 				}
@@ -670,45 +707,62 @@ Fraction randomFrac(Fraction min, Fraction max, int denoMin, int denoMax) {
 //	return frac;
 //}
 
-string newFracExp(int oprNum, int oprType, int min, int max, Fraction &result) {
+string newFracExp(int oprNum, int oprType[], int min, int max, Fraction &result) {
 
 	if (!min) {
 		min++;
 	}
 	string exp;
 	Fraction minFrac(1, max), maxFrac(1, 1);
-	const char opr[5] = { '+','-','*','/','^' };
-	int oprMax;
-	switch (oprType) {
+	/*const char opr[5] = { '+','-','*','/','^' };*/
+	char opr[5];
+	int oprMax = 0, i, j = 0;
+
+	for (i = 0; i < 5; i++) {
+		if (oprType[i]) {
+			switch (i)
+			{
+			case 0: opr[j++] = '+'; break;
+			case 1: opr[j++] = '-'; break;
+			case 2: opr[j++] = '*'; break;
+			case 3: opr[j++] = '/'; break;
+			case 4: opr[j++] = '^'; break;
+			default:
+				break;
+			}
+		}
+	}
+	oprMax = j - 1;
+	/*switch (oprType) {
 	case 0:oprMax = 1; break;
 	case 1:oprMax = 3; break;
 	case 2:oprMax = 4; break;
-	}
+	}*/
 	Fraction leftVal, rightVal, tempVal;
 	int lastOpr, curOpr;
 	int powerNum = 2;
 	int tempIndex = 2;
 
 	leftVal = randomFrac(minFrac, maxFrac, min, max);
-	if ((leftVal.getDeno() > 20 || leftVal.getNume()> 20) && oprMax == 4)
-		oprMax = 3;
+	if ((leftVal.getDeno() > 20 || leftVal.getNume()> 20) && opr[oprMax] == '^' && oprMax > 0)
+		oprMax--;
 	curOpr = (int)randomInt(0, oprMax);
 	oprNum--;
 
-	switch (curOpr) {
-	case 0:
+	switch (opr[curOpr]) {
+	case '+':
 		rightVal = randomFrac(minFrac, maxFrac, min, max);
 		break;
-	case 1: //leftVal = randomInt(min, max);
+	case '-': //leftVal = randomInt(min, max);
 		rightVal = randomFrac(minFrac, leftVal, min, max);
 		break;
-	case 2: //leftVal = randomInt(min, max);
+	case '*': //leftVal = randomInt(min, max);
 		rightVal = randomFrac(minFrac, maxFrac, min, max);
 		break;
-	case 3: //leftVal = randomInt(min, max);
+	case '/': //leftVal = randomInt(min, max);
 		rightVal = randomFrac(minFrac, maxFrac, min, max);
 		break;
-	case 4:
+	case '^':
 		tempIndex = (int)randomInt(2, 3);
 		rightVal = Fraction(tempIndex, 1);
 		powerNum--;
@@ -717,7 +771,7 @@ string newFracExp(int oprNum, int oprType, int min, int max, Fraction &result) {
 
 	leftVal.simplify();
 	rightVal.simplify();
-	if (curOpr == 4 && leftVal.getDeno() != 1) {
+	if (opr[curOpr] == '^' && leftVal.getDeno() != 1) {
 		exp = "( " + leftVal.display() + " )" + opr[curOpr] + rightVal.display();
 	}
 	else {
@@ -727,11 +781,11 @@ string newFracExp(int oprNum, int oprType, int min, int max, Fraction &result) {
 
 	while (oprNum) {
 		lastOpr = curOpr;
-		if ((!powerNum || tempVal.getDeno() > 20 || tempVal.getNume()>20) && oprMax == 4)
-			oprMax = 3;
+		if ((powerNum == 0 || tempVal.getDeno() > 20 || tempVal.getNume()>20) && opr[oprMax] == '^' && oprMax > 0)
+			oprMax--;
 		curOpr = (int)randomInt(0, oprMax);
 		oprNum--;
-		if (curOpr == 4) {
+		if (opr[curOpr] == '^') {
 			powerNum--;
 			leftVal = tempVal;
 			tempIndex = (int)randomInt(2, 3);
@@ -740,13 +794,13 @@ string newFracExp(int oprNum, int oprType, int min, int max, Fraction &result) {
 			tempVal = operate(leftVal, opr[curOpr], rightVal);
 		}
 		else {
-			if (curOpr == 3 && tempVal == Fraction(0, 1) || curOpr == 1 && tempVal >= maxFrac || randomInt(0, 1) && (!(curOpr == 1 && tempVal < minFrac))) {
+			if (opr[curOpr] == '/' && tempVal == Fraction(0, 1) || opr[curOpr] == '-' && tempVal >= maxFrac || randomInt(0, 1) && (!(opr[curOpr] == '-' && tempVal < minFrac))) {
 				leftVal = tempVal;
-				curOpr == 1 ? rightVal = randomFrac(minFrac, leftVal < maxFrac ? leftVal : maxFrac, min, max) : rightVal = randomFrac(minFrac, maxFrac, min, max);
+				opr[curOpr] == '-' ? rightVal = randomFrac(minFrac, leftVal < maxFrac ? leftVal : maxFrac, min, max) : rightVal = randomFrac(minFrac, maxFrac, min, max);
 
 				leftVal.simplify();
 				rightVal.simplify();
-				if (curOpr >= 2 && lastOpr <= 1) {
+				if ((opr[curOpr] == '*' || opr[curOpr] == '/') && (opr[lastOpr] == '+' || opr[lastOpr] == '-')) {
 					exp = "( " + exp + " ) " + opr[curOpr] + " " + rightVal.display();
 					tempVal = operate(leftVal, opr[curOpr], rightVal);
 				}
@@ -757,11 +811,11 @@ string newFracExp(int oprNum, int oprType, int min, int max, Fraction &result) {
 			}
 			else {
 				rightVal = tempVal;
-				curOpr == 1 ? leftVal = randomFrac(rightVal > minFrac ? rightVal : minFrac, maxFrac, min, max) : leftVal = randomFrac(minFrac, maxFrac, min, max);
+				opr[curOpr] == '-' ? leftVal = randomFrac(rightVal > minFrac ? rightVal : minFrac, maxFrac, min, max) : leftVal = randomFrac(minFrac, maxFrac, min, max);
 
 				leftVal.simplify();
 				rightVal.simplify();
-				if (curOpr >= 2 && lastOpr <= 1 || curOpr == 1 && lastOpr <= 1 || curOpr == 3 && (lastOpr == 3 || lastOpr == 2)) {
+				if ((opr[curOpr] == '*' || opr[curOpr] == '/') && (opr[lastOpr] == '+' || opr[lastOpr] == '-') || opr[curOpr] == '-' && (opr[lastOpr] == '+' || opr[lastOpr] == '-') || opr[curOpr] == '/' && (opr[lastOpr] == '*' || opr[lastOpr] == '/')) {
 					exp = leftVal.display() + " " + opr[curOpr] + " ( " + exp + " )";
 					tempVal = operate(leftVal, opr[curOpr], rightVal);
 				}
@@ -821,19 +875,141 @@ void arithmetic::setOprNum(int n) {
 
 }
 
-void arithmetic::setOprType(int n) {
+//void arithmetic::setOprType(int n) {
+//	try {
+//		oprType = n;
+//		if (oprType < 0 || oprType>2) {
+//			throw "Type of operators must be an integer among 0,1 and 2.";
+//		}
+//	}
+//	catch (const char* msg) {
+//		cout << msg << endl;
+//		oprType = 0;
+//		setExpNum(0);
+//	}
+//}
+
+void arithmetic::setOprAdd(int n) {
 	try {
-		oprType = n;
-		if (oprType < 0 || oprType>2) {
-			throw "Type of operators must be an integer among 0,1 and 2.";
+		oprType[0] = n;
+		if (n != 0 && n != 1 ) {
+			throw "The parameter of function seOprAdd must be zero or one.";
 		}
 	}
 	catch (const char* msg) {
 		cout << msg << endl;
-		oprType = 0;
+		oprType[0] = 1;
 		setExpNum(0);
 	}
 }
+
+void arithmetic::setOprSub(int n) {
+	try {
+		oprType[1] = n;
+		if (n != 0 && n != 1) {
+			throw "The parameter of function seOprSub must be zero or one.";
+		}
+	}
+	catch (const char* msg) {
+		cout << msg << endl;
+		oprType[1] = 1;
+		setExpNum(0);
+	}
+}
+
+void arithmetic::setOprMul(int n) {
+	try {
+		oprType[2] = n;
+		if (n != 0 && n != 1) {
+			throw "The parameter of function seOprMul must be zero or one.";
+		}
+	}
+	catch (const char* msg) {
+		cout << msg << endl;
+		oprType[2] = 0;
+		setExpNum(0);
+	}
+}
+
+void arithmetic::setOprDiv(int n) {
+	try {
+		oprType[3] = n;
+		if (n != 0 && n != 1) {
+			throw "The parameter of function seOprDiv must be zero or one.";
+		}
+	}
+	catch (const char* msg) {
+		cout << msg << endl;
+		oprType[3] = 0;
+		setExpNum(0);
+	}
+}
+
+void arithmetic::setOprPow(int n) {
+	try {
+		oprType[4] = n;
+		if (n != 0 && n != 1) {
+			throw "The parameter of function seOprPow must be zero or one.";
+		}
+	}
+	catch (const char* msg) {
+		cout << msg << endl;
+		oprType[4] = 0;
+		setExpNum(0);
+	}
+}
+
+void arithmetic::setOprAll(int a, int s, int m, int d, int p) {
+	try {
+		oprType[0] = a;
+		oprType[1] = s;
+		oprType[2] = m;
+		oprType[3] = d;
+		oprType[4] = p;
+  		if (a != 0 && a != 1 || s != 0 && s != 1 || m != 0 && m != 1 || d != 0 && d != 1 || p != 0 && p != 1) {
+			throw "The parameters of function seOprAll must be zero or one.";
+		}
+	}
+	catch (const char* msg) {
+		cout << msg << endl;
+		oprType[0] = 0;
+		oprType[1] = 0;
+		oprType[2] = 1;
+		oprType[3] = 1;
+		oprType[4] = 1;
+		setExpNum(0);
+	}
+}
+
+void arithmetic::setOprByStr(string s) {
+	int i, flag = 0;
+	int len = (int)s.length();
+	for (i = 0; i < len; i++) {
+		try {
+			switch (s[i]) {
+			case '+': oprType[0] = 1; break;
+			case '-': oprType[1] = 1; break;
+			case '*': oprType[2] = 1; break;
+			case '/': oprType[3] = 1; break;
+			case '^': oprType[4] = 1; break;
+			default: flag = 1;
+			}
+			if (flag) {
+				throw "The string should contains '+','-','*','/','^' only.";
+			}
+		}
+		catch (const char* msg) {
+			cout << msg << endl;
+			oprType[0] = 1;
+			oprType[1] = 1;
+			oprType[2] = 0;
+			oprType[3] = 0;
+			oprType[4] = 0;
+			setExpNum(0);
+		}
+	}
+}
+
 
 void arithmetic::setBounds(int min, int max) {
 	try {
@@ -856,7 +1032,7 @@ void arithmetic::setAccuracy(int n) {
 
 	try {
 		accuracy = n;
-		if (n < 0)throw"Acurracy index must be a non-negative integer.";
+		if (n < 0 || n > 6)throw"Acurracy index must be a non-negative integer less than or equal to 6.";
 	}
 	catch (const char* msg) {
 		cout << msg << endl;
@@ -894,7 +1070,7 @@ void arithmetic::generate()
 {
 	srand((unsigned)(time(NULL)));
 
-	if (expNum < 1 || expType < 0 || expType > 2 || oprNum < 1 || oprType < 0 || oprType > 2 || min < 0 || min > max || accuracy < 0)
+	if (expNum < 1 || expType < 0 || expType > 2 || oprNum < 1 || min < 0 || min > max || accuracy < 0)
 		exit(0);
 
 	int i;
