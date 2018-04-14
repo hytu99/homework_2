@@ -16,13 +16,9 @@
 #endif 
 
 #define epsilon 1e-8
-#define eleMax 9;
 #define INTEGER 0
 #define DECIMAL 1
 #define FRACTION 2
-#define ADDSUB 0
-#define MULDIV 1
-#define POW 2
 #define DIVISIONSIZE 500
 using namespace std;
 
@@ -77,10 +73,12 @@ public:
 ArithmeticAPI string calc_frac(string s);
 
 //return a random number between min and max
-ArithmeticAPI double randomInt(int min, int max);
+ArithmeticAPI int randomInt(int min, int max);
+
+ArithmeticAPI double randomDec(double min, double max, int k);
 
 //return an expression composed of integers meeting the requirements
-ArithmeticAPI string newExp(int oprNum, int oprType, int min, int max, double &result);
+ArithmeticAPI string newExp(int oprNum, int oprType[], int min, int max, double &result, int accuracy);
 
 //return a random divisor between min and max for the dividend
 ArithmeticAPI int randomDivisor(int dividend, int min, int max);
@@ -89,13 +87,13 @@ ArithmeticAPI int randomDivisor(int dividend, int min, int max);
 ArithmeticAPI int randomDividend(int divisor, int min, int max);
 
 //return an expression composed of integers meeting the requirements
-ArithmeticAPI string newExactDivExp(int oprNum, int oprType, int min, int max, int &result);
+ArithmeticAPI string newExactDivExp(int oprNum, int oprType[], int min, int max, int &result);
 
 //return a random fraction between min and max
 ArithmeticAPI Fraction randomFrac(Fraction min, Fraction max, int denoMin, int denoMax);
 
 //return an expression composed of fractions meeting the requirements
-ArithmeticAPI string newFracExp(int oprNum, int oprType, int min, int max, Fraction &result);
+ArithmeticAPI string newFracExp(int oprNum, int oprType[], int min, int max, Fraction &result);
 
 class ArithmeticAPI arithmetic {
 private:
@@ -107,7 +105,7 @@ private:
 	int expNum;
 	int expType;    //0 for integers, 1 for decimals, 2 for fractions
 	int oprNum;
-	int oprType;    //0 for +-, 1 for +-x/, 2 for +-x/^
+	int oprType[5];    //0 for +-, 1 for +-x/, 2 for +-x/^
 	int min, max;
 	int accuracy;   //the accuracy of decimals
 
@@ -117,7 +115,11 @@ public:
 		expNum = 1;
 		expType = 0;
 		oprNum = 1;
-		oprType = 0;
+		oprType[0] = 1; 
+		oprType[1] = 1;
+		oprType[2] = 0;
+		oprType[3] = 0;
+		oprType[4] = 0;
 		min = 1;
 		max = 10;
 		accuracy = 2;
@@ -127,7 +129,13 @@ public:
 	void setExpNum(int n);
 	void setExpType(int n);
 	void setOprNum(int n);
-	void setOprType(int n);
+	void setOprAdd(int n);
+	void setOprSub(int n);
+	void setOprMul(int n);
+	void setOprDiv(int n);
+	void setOprPow(int n);
+	void setOprAll(int a, int s, int m, int d, int p);
+	void setOprByStr(string s);
 	void setBounds(int min, int max);
 	void setAccuracy(int n);
 
