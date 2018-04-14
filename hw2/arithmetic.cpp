@@ -396,9 +396,9 @@ double randomDec(double min, double max, int k) {
 
 string newExp(int oprNum, int oprType[], int min, int max, double &result, int accuracy) {
 
-	if (!min) {
+	/*if (!min) {
 		min++;
-	}
+	}*/
 	string exp;
 	int i, j = 0, oprMax = 0;
 	char opr[5];
@@ -446,6 +446,9 @@ string newExp(int oprNum, int oprType[], int min, int max, double &result, int a
 		break;
 	case '/': 
 		rightVal = randomDec(min, max, randomAcc);
+		while (opr[curOpr] == '/' && fabs(rightVal) < 0.001) {
+			rightVal = randomDec(min, max, accuracy);
+		}
 		break;
 	case '^':rightVal = randomInt(2, 3);
 		powerNum--;
@@ -479,6 +482,9 @@ string newExp(int oprNum, int oprType[], int min, int max, double &result, int a
 				leftVal = tempVal;
 				randomAcc = randomInt(0, accuracy);
 				opr[curOpr] == '-' ? rightVal = randomDec(min, leftVal < max ? leftVal : max, randomAcc) : rightVal = randomDec(min, max, randomAcc);
+				while(opr[curOpr] == '/' && fabs(rightVal) < 0.001) {
+					rightVal = randomDec(min, max, accuracy);
+				}
 				if ((opr[curOpr] == '*' || opr[curOpr] == '/') && (opr[lastOpr] == '+' || opr[lastOpr] == '-')) {
 					tempStr = to_string(rightVal);
 					tempStr = tempStr.substr(0, randomAcc ? tempStr.size() - 6 + randomAcc : tempStr.size() - 7 + randomAcc);
