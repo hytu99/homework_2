@@ -60,9 +60,9 @@ public:
 
  string calc_frac(string s);
 
- double randomInt(int min, int max);
+int randomInt(int min, int max);
 
- string newExp(int oprNum, int oprType[], int min, int max, double &result);
+ string newExp(int oprNum, int oprType[], int min, int max, double &result, int accuracy);
 
  int randomDivisor(int dividend, int min, int max);
 

@@ -374,7 +374,7 @@ string calc_frac(string s)
 	return result;
 }
 
-double randomInt(int min, int max) {
+int randomInt(int min, int max) {
 	return rand() % (max - min + 1) + min;
 }
 
@@ -394,7 +394,7 @@ double randomDec(double min, double max, int k) {
 }
 
 
-string newExp(int oprNum, int oprType[], int min, int max, double &result) {
+string newExp(int oprNum, int oprType[], int min, int max, double &result, int accuracy) {
 
 	if (!min) {
 		min++;
@@ -404,7 +404,9 @@ string newExp(int oprNum, int oprType[], int min, int max, double &result) {
 	char opr[5];
 	int curOpr, lastOpr;
 	double leftVal, rightVal, tempVal;
+	string tempStr, tempStrR;
 	int powerNum = 2;
+	int randomAcc;
 
 	for (i = 0; i < 5; i++) {
 		if (oprType[i]) {
@@ -421,41 +423,49 @@ string newExp(int oprNum, int oprType[], int min, int max, double &result) {
 		}
 	}
 	oprMax = j - 1;
+	randomAcc = randomInt(0, accuracy);
+	leftVal = randomDec(min, max, randomAcc);
+	tempStr = to_string(leftVal);
+	tempStr = tempStr.substr(0, randomAcc ? tempStr.size() - 6 + randomAcc : tempStr.size() - 7 + randomAcc);
 
-	leftVal = randomInt(min, max);
 	if (leftVal > 20 && opr[oprMax] == '^' && oprMax > 0)
 		oprMax--;
-	curOpr = (int)randomInt(0, oprMax);
+	curOpr = randomInt(0, oprMax);
 	oprNum--;
 
+	randomAcc = randomInt(0, accuracy);
 	switch (opr[curOpr]) {
 	case '+':
-		rightVal = randomInt(min, max);
+		rightVal = randomDec(min, max, randomAcc);
 		break;
 	case '-':
-		rightVal = randomInt(min, (int)leftVal);
+		rightVal = randomDec(min, leftVal, randomAcc);
 		break;
 	case '*':
-		rightVal = randomInt(min, max);
+		rightVal = randomDec(min, max, randomAcc);
 		break;
 	case '/': 
-		rightVal = randomInt(min, max);
+		rightVal = randomDec(min, max, randomAcc);
 		break;
 	case '^':rightVal = randomInt(2, 3);
 		powerNum--;
 		break;
 	}
-	if (opr[curOpr] == '^')
-		exp = to_string((int)leftVal) + opr[curOpr] + to_string((int)rightVal);
-	else
-		exp = to_string((int)leftVal) + " " + opr[curOpr] + " " + to_string((int)rightVal);
+	if (opr[curOpr] == '^') {
+		exp = tempStr + opr[curOpr] + to_string((int)rightVal);
+	}
+	else {
+		tempStrR = to_string(rightVal);
+		tempStrR = tempStrR.substr(0, randomAcc? tempStrR.size() - 6 + randomAcc : tempStrR.size() - 7 + randomAcc);
+		exp = tempStr + " " + opr[curOpr] + " " + tempStrR;
+	}
 	tempVal = operate(leftVal, opr[curOpr], rightVal);
 
 	while (oprNum) {
 		lastOpr = curOpr;
 		if ((powerNum == 0 || tempVal > 20) && opr[oprMax] == '^' && oprMax > 0)
 			oprMax--;
-		curOpr = (int)randomInt(0, oprMax);
+		curOpr = randomInt(0, oprMax);
 		oprNum--;
 		if (opr[curOpr] == '^') {
 			powerNum--;
@@ -465,27 +475,37 @@ string newExp(int oprNum, int oprType[], int min, int max, double &result) {
 			tempVal = operate(leftVal, opr[curOpr], rightVal);
 		}
 		else {
-			if (opr[curOpr] == '/' && tempVal == 0 || opr[curOpr] == '-' && tempVal >= max || (int)randomInt(0, 1) && (!(opr[curOpr] == '-' && tempVal < min))) {
+			if (opr[curOpr] == '/' && tempVal == 0 || opr[curOpr] == '-' && tempVal >= max || randomInt(0, 1) && (!(opr[curOpr] == '-' && tempVal < min))) {
 				leftVal = tempVal;
-				opr[curOpr] == '-' ? rightVal = randomInt(min, leftVal < max ? (int)leftVal : max) : rightVal = randomInt(min, max);
+				randomAcc = randomInt(0, accuracy);
+				opr[curOpr] == '-' ? rightVal = randomDec(min, leftVal < max ? leftVal : max, randomAcc) : rightVal = randomDec(min, max, randomAcc);
 				if ((opr[curOpr] == '*' || opr[curOpr] == '/') && (opr[lastOpr] == '+' || opr[lastOpr] == '-')) {
-					exp = "( " + exp + " ) " + opr[curOpr] + " " + to_string((int)rightVal);
+					tempStr = to_string(rightVal);
+					tempStr = tempStr.substr(0, randomAcc ? tempStr.size() - 6 + randomAcc : tempStr.size() - 7 + randomAcc);
+					exp = "( " + exp + " ) " + opr[curOpr] + " " + tempStr;
 					tempVal = operate(leftVal, opr[curOpr], rightVal);
 				}
 				else {
-					exp = exp + " " + opr[curOpr] + " " + to_string((int)rightVal);
+					tempStr = to_string(rightVal);
+					tempStr = tempStr.substr(0, randomAcc ? tempStr.size() - 6 + randomAcc : tempStr.size() - 7 + randomAcc);
+					exp = exp + " " + opr[curOpr] + " " + tempStr;
 					tempVal = operate(leftVal, opr[curOpr], rightVal);
 				}
 			}
 			else {
 				rightVal = tempVal;
-				opr[curOpr] == '-' ? leftVal = randomInt(rightVal > min ? (int)rightVal : min, max) : leftVal = randomInt(min, max);
+				randomAcc = randomInt(0, accuracy);
+				opr[curOpr] == '-' ? leftVal = randomDec(rightVal > min ? rightVal : min, max, randomAcc) : leftVal = randomDec(min, max, randomAcc);
 				if ((opr[curOpr] == '*' || opr[curOpr] == '/') && (opr[lastOpr] == '+' || opr[lastOpr] == '-') || opr[curOpr] == '-' && (opr[lastOpr] == '+' || opr[lastOpr] == '-') || opr[curOpr] == '/' && (opr[lastOpr] == '*' || opr[lastOpr] == '/')) {
-					exp = to_string((int)leftVal) + " " + opr[curOpr] + " ( " + exp + " )";
+					tempStr = to_string(leftVal);
+					tempStr = tempStr.substr(0, randomAcc ? tempStr.size() - 6 + randomAcc : tempStr.size() - 7 + randomAcc);
+					exp = tempStr + " " + opr[curOpr] + " ( " + exp + " )";
 					tempVal = operate(leftVal, opr[curOpr], rightVal);
 				}
 				else {
-					exp = to_string((int)leftVal) + " " + opr[curOpr] + " " + exp;
+					tempStr = to_string(leftVal);
+					tempStr = tempStr.substr(0, randomAcc ? tempStr.size() - 6 + randomAcc : tempStr.size() - 7 + randomAcc);
+					exp = tempStr + " " + opr[curOpr] + " " + exp;
 					tempVal = operate(leftVal, opr[curOpr], rightVal);
 				}
 			}
@@ -574,32 +594,27 @@ string newExactDivExp(int oprNum, int oprType[], int min, int max, int &result) 
 		}
 	}
 	oprMax = j - 1;
-	/*switch (oprType) {
-	case 0:oprMax = 1; break;
-	case 1:oprMax = 3; break;
-	case 2:oprMax = 4; break;
-	}*/
 
-	leftVal = (int)randomInt(min, max);
+	leftVal = randomInt(min, max);
 	if (leftVal > 20 && opr[oprMax] == '^' && oprMax > 0)
 		oprMax--;
-	curOpr = (int)randomInt(0, oprMax);
+	curOpr = randomInt(0, oprMax);
 	oprNum--;
 
 	switch (opr[curOpr]) {
 	case '+': 
-		rightVal = (int)randomInt(min, max);
+		rightVal = randomInt(min, max);
 		break;
 	case '-': 
-		rightVal = (int)randomInt(min, leftVal);
+		rightVal = randomInt(min, leftVal);
 		break;
 	case '*': 
-		rightVal = (int)randomInt(min, max);
+		rightVal = randomInt(min, max);
 		break;
 	case '/': if (min == 0)min++;
 		rightVal = randomDivisor(leftVal, min, leftVal);
 		break;
-	case '^':rightVal = (int)randomInt(2, 3);
+	case '^':rightVal = randomInt(2, 3);
 		powerNum--;
 		break;
 	}
@@ -612,19 +627,19 @@ string newExactDivExp(int oprNum, int oprType[], int min, int max, int &result) 
 		lastOpr = curOpr;
 		if ((powerNum == 0 || tempVal > 20) && opr[oprMax] == '^' && oprMax > 0)
 			oprMax--;
-		curOpr = (int)randomInt(0, oprMax);
+		curOpr = randomInt(0, oprMax);
 		oprNum--;
 		if (opr[curOpr] == '^') {
 			powerNum--;
 			leftVal = tempVal;
-			rightVal = (int)randomInt(2, 3);
+			rightVal = randomInt(2, 3);
 			exp = "( " + exp + " )" + opr[curOpr] + "" + to_string(rightVal);
 			tempVal = (int)operate(leftVal, opr[curOpr], rightVal);
 		}
 		else {
-			if (opr[curOpr] == '/' && tempVal == 0 || opr[curOpr] == '-' && tempVal >= max || (int)randomInt(0, 1) && (!(opr[curOpr] == '-' && tempVal < min))) {
+			if (opr[curOpr] == '/' && tempVal == 0 || opr[curOpr] == '-' && tempVal >= max || randomInt(0, 1) && (!(opr[curOpr] == '-' && tempVal < min))) {
 				leftVal = tempVal;
-				opr[curOpr] == '-' ? rightVal = (int)randomInt(min, leftVal < max ? leftVal : max) : rightVal = (int)randomInt(min, max);
+				opr[curOpr] == '-' ? rightVal = randomInt(min, leftVal < max ? leftVal : max) : rightVal = randomInt(min, max);
 				if (opr[curOpr] == '/') {
 					if (!min)min++;
 					rightVal = randomDivisor(leftVal, min, leftVal < max ? leftVal : max);
@@ -645,7 +660,7 @@ string newExactDivExp(int oprNum, int oprType[], int min, int max, int &result) 
 			}
 			else {
 				rightVal = tempVal;
-				opr[curOpr] == '-' ? leftVal = (int)randomInt(rightVal > min ? rightVal : min, max) : leftVal = (int)randomInt(min, max);
+				opr[curOpr] == '-' ? leftVal = randomInt(rightVal > min ? rightVal : min, max) : leftVal = randomInt(min, max);
 				if (opr[curOpr] == '/') {
 					leftVal = randomDividend(rightVal, rightVal > min ? rightVal : min, max);
 					if (leftVal == rightVal && (leftVal<min || leftVal>max)) {
@@ -697,16 +712,6 @@ Fraction randomFrac(Fraction min, Fraction max, int denoMin, int denoMax) {
 	return Fraction(nume, deno);
 }
 
-//Fraction randomFrac(Fraction min, Fraction max, int a, int b) {
-//
-//	int deno = min.getDeno()*max.getDeno();
-//	int numeMin = min.getNume()*max.getDeno();
-//	int numeMax = min.getDeno()*max.getNume();
-//	int nume = (int)randomInt(numeMin, numeMax);
-//	Fraction frac(nume, deno);
-//	return frac;
-//}
-
 string newFracExp(int oprNum, int oprType[], int min, int max, Fraction &result) {
 
 	if (!min) {
@@ -733,11 +738,7 @@ string newFracExp(int oprNum, int oprType[], int min, int max, Fraction &result)
 		}
 	}
 	oprMax = j - 1;
-	/*switch (oprType) {
-	case 0:oprMax = 1; break;
-	case 1:oprMax = 3; break;
-	case 2:oprMax = 4; break;
-	}*/
+
 	Fraction leftVal, rightVal, tempVal;
 	int lastOpr, curOpr;
 	int powerNum = 2;
@@ -746,7 +747,7 @@ string newFracExp(int oprNum, int oprType[], int min, int max, Fraction &result)
 	leftVal = randomFrac(minFrac, maxFrac, min, max);
 	if ((leftVal.getDeno() > 20 || leftVal.getNume()> 20) && opr[oprMax] == '^' && oprMax > 0)
 		oprMax--;
-	curOpr = (int)randomInt(0, oprMax);
+	curOpr = randomInt(0, oprMax);
 	oprNum--;
 
 	switch (opr[curOpr]) {
@@ -783,12 +784,12 @@ string newFracExp(int oprNum, int oprType[], int min, int max, Fraction &result)
 		lastOpr = curOpr;
 		if ((powerNum == 0 || tempVal.getDeno() > 20 || tempVal.getNume()>20) && opr[oprMax] == '^' && oprMax > 0)
 			oprMax--;
-		curOpr = (int)randomInt(0, oprMax);
+		curOpr = randomInt(0, oprMax);
 		oprNum--;
 		if (opr[curOpr] == '^') {
 			powerNum--;
 			leftVal = tempVal;
-			tempIndex = (int)randomInt(2, 3);
+			tempIndex = randomInt(2, 3);
 			rightVal = Fraction(tempIndex, 1);
 			exp = "( " + exp + " )" + opr[curOpr] + "" + rightVal.display();
 			tempVal = operate(leftVal, opr[curOpr], rightVal);
@@ -1086,7 +1087,7 @@ void arithmetic::generate()
 		case 0:p[i].exp = newExactDivExp(oprNum, oprType, min, max, resultI);
 			p[i].ans = to_string(resultI);
 			break;
-		case 1:p[i].exp = newExp(oprNum, oprType, min, max, resultD);
+		case 1:p[i].exp = newExp(oprNum, oprType, min, max, resultD, accuracy);
 			switch (accuracy) {
 			case 0: sprintf(result, "%.0lf", resultD); break;
 			case 1: sprintf(result, "%.1lf", resultD); break;
